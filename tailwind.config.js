@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [],
+  content: [
+    './resources/views/login/login_form.blade.php',
+  ],
   theme: {
     extend: {},
   },
