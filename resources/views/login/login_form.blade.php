@@ -28,6 +28,11 @@
             </span>
           </div>
         @endif
+        @if (session('logout'))
+        <div class="flex items-center bg-blue-500 text-white text-sm font-bold px-4 py-3" role="alert">
+          <p>{{ session('logout') }}</p>
+        </div>
+        @endif
         <label class="block text-grey-darker text-sm font-bold mb-2" for="username">
           Email address
         </label>
