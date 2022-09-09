@@ -24,6 +24,10 @@
         <li>名前: {{ Auth::user()->name }}</li>
         <li>メールアドレス: {{ Auth::user()->email }}</li>
       </ul>
+      <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" value="ログアウト">
+      </form>
     </div>
   </div>
 </body>
