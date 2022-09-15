@@ -10,6 +10,10 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
     /**
      * @return View
      */
@@ -26,32 +30,26 @@ class AuthController extends Controller
     {
         $input = $request->only('email', 'password');
 
-        $user = User::where('email', '=', $input['email'])->first();
+        $user = $this->user->getUserByEmail($input['email']);
 
         if (!is_null($user)) {
-            if ($user->locked_flag === 1) {
+            if ($this->user->isAccountLocked($user)) {
                 return back()->withErrors(['login_error' => 'アカウントがロックされています。']);
             }
             if (Auth::attempt($input)) {
                 $request->session()->regenerate();
-                if ($user->error_count > 0) {
-                    $user->error_count = 0;
-                    // sessionを作り直した後にユーザを保存
-                    $user->save();
-                }
+                $this->user->resetErrorCount($user);
+                
                 return redirect('home')->with('login_success', 'ログインが成功しました！');
             }
 
-            $user->error_count ++;
+            $user->error_count = $this->user->countError($user->error_count);
 
-            if ($user->error_count > 5) {
-                $user->locked_flag = 1;
-                $user->save();
+            if ($this->user->lockAccount($user)) {
                 return back()->withErrors([
                     'login_error' => 'アカウントがロックされました。しばらくしてから再度ログインしてください。',
                 ]);
             }
-            
             $user->save();
         }
         
